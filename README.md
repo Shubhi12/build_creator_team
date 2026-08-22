@@ -33,7 +33,7 @@ docker compose up --build
 
 Once running:
 - **Frontend App**: [http://localhost:8081](http://localhost:8081)
-- **FastAPI OpenAPI Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **FastAPI OpenAPI Docs**: [http://localhost:8000/docs](http://localhost:8000/docs) ##change the port in case the port is occupied using docker-compose.yml file
 - **API Base URL**: [http://localhost:8000/api/v1](http://localhost:8000/api/v1)
 
 ---
