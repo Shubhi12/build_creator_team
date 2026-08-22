@@ -1,6 +1,6 @@
 // API Service layer connecting React Native client with FastAPI backend
 const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-  ? `http://${window.location.hostname}:800q/api/v1`
+  ? `http://${window.location.hostname}:8001/api/v1`
   : 'http://localhost:8001/api/v1';
 
 export async function fetchJobs(category = null, workType = null, search = '') {
