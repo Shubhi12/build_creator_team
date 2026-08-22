@@ -21,5 +21,10 @@ class Profile(Base):
     # Creator specific fields
     niche = Column(String, nullable=True) # e.g. "Tech & Finance", "Fitness & Gaming"
     subscriber_count = Column(String, nullable=True) # e.g. "250K"
+    brand_name = Column(String, nullable=True)
+    instagram_handle = Column(String, nullable=True)
+
+    # Applicant specific fields
+    education = Column(String, nullable=True) # e.g. "B.A. in Filmmaking"
 
     user = relationship("User", back_populates="profile")

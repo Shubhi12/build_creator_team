@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TextInput } fro
 import { colors } from '../theme/colors';
 import { submitApplication } from '../services/api';
 
-export default function JobCard({ job, onApplied, currentUser, setActiveTab }) {
+export default function JobCard({ job, onApplied, currentUser, setActiveTab, navigateToProfile }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [coverNote, setCoverNote] = useState('');
   const [portfolio, setPortfolio] = useState('');
@@ -54,13 +54,13 @@ export default function JobCard({ job, onApplied, currentUser, setActiveTab }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <View style={styles.creatorInfo}>
+        <TouchableOpacity style={styles.creatorInfo} onPress={() => navigateToProfile && navigateToProfile(job.creator_id)}>
           <Image source={{ uri: avatarUrl }} style={styles.avatar} />
           <View>
-            <Text style={styles.creatorName}>{creatorName}</Text>
+            <Text style={styles.creatorName}>{creatorName} ↗</Text>
             <Text style={styles.categoryBadge}>{job.role_category}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.typeBadge}>
           <Text style={styles.typeBadgeText}>{job.work_type}</Text>

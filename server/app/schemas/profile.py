@@ -15,6 +15,9 @@ class ProfileBase(BaseModel):
     verified: Optional[bool] = True
     niche: Optional[str] = None
     subscriber_count: Optional[str] = None
+    brand_name: Optional[str] = None
+    instagram_handle: Optional[str] = None
+    education: Optional[str] = None
 
 class ProfileCreate(ProfileBase):
     user_id: int
@@ -26,3 +29,15 @@ class ProfileResponse(ProfileBase):
 
     class Config:
         from_attributes = True
+
+class WorkingPartnerResponse(BaseModel):
+    user_id: int
+    full_name: str
+    avatar_url: Optional[str] = None
+    role: str
+    job_title: str
+
+class ProfilePageResponse(BaseModel):
+    profile: Optional[ProfileResponse] = None
+    user: UserResponse
+    working_partners: List[WorkingPartnerResponse] = []

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function TalentCard({ profile, onHire }) {
+export default function TalentCard({ profile, onHire, navigateToProfile }) {
   const name = profile.user?.full_name || 'Professional Talent';
   const avatarUrl = profile.user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
@@ -16,11 +16,14 @@ export default function TalentCard({ profile, onHire }) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
+      <TouchableOpacity 
+        style={styles.header} 
+        onPress={() => navigateToProfile && navigateToProfile(profile.user_id)}
+      >
         <Image source={{ uri: avatarUrl }} style={styles.avatar} />
         <View style={styles.info}>
           <View style={styles.nameRow}>
-            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.name}>{name} ↗</Text>
             {profile.verified && (
               <View style={styles.verifiedBadge}>
                 <Text style={styles.verifiedText}>✓ Verified</Text>
@@ -30,7 +33,7 @@ export default function TalentCard({ profile, onHire }) {
           <Text style={styles.role}>{profile.primary_role}</Text>
           <Text style={styles.location}>📍 {profile.location || 'India / Remote'}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <Text style={styles.bio}>{profile.bio}</Text>
 

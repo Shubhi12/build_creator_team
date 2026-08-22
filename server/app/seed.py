@@ -52,21 +52,27 @@ def seed_db():
             bio="Leading Tech & Gadget review channel with 450K subscribers across YouTube & Instagram.",
             niche="Tech & Reviews",
             subscriber_count="450K+",
-            location="Bengaluru, IN"
+            location="Bengaluru, IN",
+            brand_name="TechTalkies",
+            instagram_handle="@techtalkies"
         )
         cp2 = Profile(
             user_id=c2.id,
             bio="Fitness & Lifestyle channel producing 4 Reels/week + 2 YouTube Vlogs.",
             niche="Fitness & Wellness",
             subscriber_count="820K+",
-            location="Mumbai, IN"
+            location="Mumbai, IN",
+            brand_name="FitLifeKabir",
+            instagram_handle="@fitlifekabir"
         )
         cp3 = Profile(
             user_id=c3.id,
             bio="Simplifying personal finance, stock market insights, and wealth management for Gen Z.",
             niche="Finance & Investing",
             subscriber_count="290K+",
-            location="Delhi NCR, IN"
+            location="Delhi NCR, IN",
+            brand_name="FinBytes",
+            instagram_handle="@finbytes"
         )
         db.add_all([cp1, cp2, cp3])
 
@@ -117,7 +123,8 @@ def seed_db():
             rate_range="₹35,000 - ₹55,000 / mo",
             rating=4.9,
             completed_projects=28,
-            verified=True
+            verified=True,
+            education="B.A. in Digital Media, IIT Bombay"
         )
         pp2 = Profile(
             user_id=p2.id,
@@ -130,7 +137,8 @@ def seed_db():
             rate_range="₹25,000 - ₹40,000 / mo",
             rating=4.8,
             completed_projects=19,
-            verified=True
+            verified=True,
+            education="Diploma in 3D Animation, MAAC"
         )
         pp3 = Profile(
             user_id=p3.id,
@@ -143,7 +151,8 @@ def seed_db():
             rate_range="₹30,000 - ₹50,000 / mo",
             rating=5.0,
             completed_projects=35,
-            verified=True
+            verified=True,
+            education="B.B.A. in Marketing, Delhi University"
         )
         pp4 = Profile(
             user_id=p4.id,
@@ -217,7 +226,7 @@ def seed_db():
             cover_note="Hey! I have edited over 100+ tech videos with retention rates averaging 65%. Check out my sample tech review edit attached.",
             portfolio_link="https://youtube.com/showcase-aarav",
             proposed_rate="₹45,000 / month",
-            status="shortlisted"
+            status="hired"
         )
         a2 = Application(
             job_id=j2.id,

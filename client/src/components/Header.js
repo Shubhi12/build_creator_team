@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function Header({ activeTab, setActiveTab, currentUser, onLogout }) {
+export default function Header({ activeTab, setActiveTab, currentUser, onLogout, navigateToProfile }) {
   const tabs = [
     { key: 'home', label: 'Overview' },
   ];
@@ -17,6 +17,10 @@ export default function Header({ activeTab, setActiveTab, currentUser, onLogout 
   }
 
   tabs.push({ key: 'dashboard', label: 'Dashboard' });
+
+  if (currentUser) {
+    tabs.push({ key: 'profile', label: 'My Profile' });
+  }
 
   return (
     <View style={styles.headerContainer}>
@@ -38,16 +42,18 @@ export default function Header({ activeTab, setActiveTab, currentUser, onLogout 
 
           {currentUser ? (
             <View style={styles.profileContainer}>
-              <Image
-                source={{ uri: currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' }}
-                style={styles.avatar}
-              />
-              <View style={styles.profileTextContainer}>
-                <Text style={styles.profileName}>{currentUser.full_name}</Text>
-                <Text style={styles.profileRole}>
-                  {currentUser.user_type === 'creator' ? '👑 Creator' : '🎬 Talent'}
-                </Text>
-              </View>
+              <TouchableOpacity style={styles.profileClickable} onPress={() => navigateToProfile(null)}>
+                <Image
+                  source={{ uri: currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' }}
+                  style={styles.avatar}
+                />
+                <View style={styles.profileTextContainer}>
+                  <Text style={styles.profileName}>{currentUser.full_name}</Text>
+                  <Text style={styles.profileRole}>
+                    {currentUser.user_type === 'creator' ? '👑 Creator' : '🎬 Talent'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
                 <Text style={styles.logoutBtnText}>Log Out</Text>
               </TouchableOpacity>
@@ -160,6 +166,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,
+    gap: 8,
+  },
+  profileClickable: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   avatar: {

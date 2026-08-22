@@ -5,7 +5,7 @@ import RoleFilter from '../components/RoleFilter';
 import TalentCard from '../components/TalentCard';
 import { fetchProfiles } from '../services/api';
 
-export default function TalentScreen() {
+export default function TalentScreen({ navigateToProfile }) {
   const [selectedRole, setSelectedRole] = useState('All Roles');
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ export default function TalentScreen() {
         <View>
           <Text style={styles.resultsCount}>{profiles.length} Verified Professionals Available</Text>
           {profiles.map((profile) => (
-            <TalentCard key={profile.id} profile={profile} />
+            <TalentCard key={profile.id} profile={profile} navigateToProfile={navigateToProfile} />
           ))}
         </View>
       )}

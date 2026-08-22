@@ -5,7 +5,7 @@ import RoleFilter from '../components/RoleFilter';
 import JobCard from '../components/JobCard';
 import { fetchJobs } from '../services/api';
 
-export default function JobsScreen({ currentUser, setActiveTab }) {
+export default function JobsScreen({ currentUser, setActiveTab, navigateToProfile }) {
   const [selectedRole, setSelectedRole] = useState('All Roles');
   const [search, setSearch] = useState('');
   const [jobs, setJobs] = useState([]);
@@ -76,6 +76,7 @@ export default function JobsScreen({ currentUser, setActiveTab }) {
               onApplied={loadJobs}
               currentUser={currentUser}
               setActiveTab={setActiveTab}
+              navigateToProfile={navigateToProfile}
             />
           ))}
         </View>

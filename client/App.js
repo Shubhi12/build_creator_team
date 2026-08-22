@@ -8,12 +8,14 @@ import TalentScreen from './src/screens/TalentScreen';
 import PostJobScreen from './src/screens/PostJobScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import AuthScreen from './src/screens/AuthScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import { getMe, logout } from './src/services/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [profileUserId, setProfileUserId] = useState(null);
 
   // Check active session on startup
   useEffect(() => {
@@ -38,6 +40,11 @@ export default function App() {
     setActiveTab('home');
   };
 
+  const navigateToProfile = (uid = null) => {
+    setProfileUserId(uid);
+    setActiveTab('profile');
+  };
+
   // decorator-equivalent pattern in React to check active user sessions or redirect them
   const withAuth = (Component, allowedRoles = []) => {
     return (props) => {
@@ -54,7 +61,6 @@ export default function App() {
           <AuthScreen
             onAuthSuccess={(user, token) => {
               setCurrentUser(user);
-              // Keeps the user on the tab they attempted to visit after success
               setActiveTab(activeTab);
             }}
           />
@@ -88,13 +94,22 @@ export default function App() {
       case 'home':
         return <HomeScreen setActiveTab={setActiveTab} currentUser={currentUser} />;
       case 'jobs':
-        return <JobsScreen currentUser={currentUser} setActiveTab={setActiveTab} />;
+        return <JobsScreen currentUser={currentUser} setActiveTab={setActiveTab} navigateToProfile={navigateToProfile} />;
       case 'talent':
-        return <TalentScreen currentUser={currentUser} />;
+        return <TalentScreen currentUser={currentUser} navigateToProfile={navigateToProfile} />;
       case 'post':
-        return <ProtectedPostJobScreen />;
+        return <ProtectedPostJobScreen navigateToProfile={navigateToProfile} />;
       case 'dashboard':
-        return <ProtectedDashboardScreen />;
+        return <ProtectedDashboardScreen navigateToProfile={navigateToProfile} />;
+      case 'profile':
+        return (
+          <ProfileScreen
+            currentUser={currentUser}
+            profileUserId={profileUserId}
+            setProfileUserId={navigateToProfile}
+            setActiveTab={setActiveTab}
+          />
+        );
       case 'auth':
         return (
           <AuthScreen
@@ -117,6 +132,7 @@ export default function App() {
         setActiveTab={setActiveTab}
         currentUser={currentUser}
         onLogout={handleLogout}
+        navigateToProfile={navigateToProfile}
       />
       <View style={styles.body}>
         {renderScreen()}

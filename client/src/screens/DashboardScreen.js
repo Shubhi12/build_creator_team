@@ -4,7 +4,7 @@ import { colors } from '../theme/colors';
 import StatCard from '../components/StatCard';
 import { fetchApplications, updateApplicationStatus, fetchJobs } from '../services/api';
 
-export default function DashboardScreen({ currentUser }) {
+export default function DashboardScreen({ currentUser, setActiveTab, navigateToProfile }) {
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,18 +166,23 @@ export default function DashboardScreen({ currentUser }) {
                 <View key={app.id} style={styles.appCard}>
                   <View style={styles.appHeader}>
                     <View style={styles.userInfo}>
-                      <Image source={{ uri: avatar }} style={styles.avatar} />
-                      <View>
-                        <Text style={styles.name}>{name}</Text>
-                        <Text style={styles.jobAppliedFor}>
-                          Applied for: <Text style={styles.jobHighlight}>{jobTitle}</Text>
-                        </Text>
-                        {app.portfolio_link ? (
-                          <TouchableOpacity onPress={() => window.open && window.open(app.portfolio_link, '_blank')}>
-                            <Text style={styles.portfolioLink}>🔗 Portfolio: {app.portfolio_link}</Text>
-                          </TouchableOpacity>
-                        ) : null}
-                      </View>
+                      <TouchableOpacity 
+                        style={styles.userInfoClickable}
+                        onPress={() => navigateToProfile && navigateToProfile(app.applicant_id)}
+                      >
+                        <Image source={{ uri: avatar }} style={styles.avatar} />
+                        <View>
+                          <Text style={styles.name}>{name} ↗</Text>
+                          <Text style={styles.jobAppliedFor}>
+                            Applied for: <Text style={styles.jobHighlight}>{jobTitle}</Text>
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                      {app.portfolio_link ? (
+                        <TouchableOpacity style={{ marginTop: 6, marginLeft: 60 }} onPress={() => window.open && window.open(app.portfolio_link, '_blank')}>
+                          <Text style={styles.portfolioLink}>🔗 Portfolio: {app.portfolio_link}</Text>
+                        </TouchableOpacity>
+                      ) : null}
                     </View>
 
                     <View style={[
@@ -274,7 +279,9 @@ export default function DashboardScreen({ currentUser }) {
                 <View style={styles.appHeader}>
                   <View>
                     <Text style={styles.jobTitleText}>{jobTitle}</Text>
-                    <Text style={styles.creatorNameText}>Creator: {creatorName}</Text>
+                    <TouchableOpacity onPress={() => navigateToProfile && navigateToProfile(app.job?.creator_id)}>
+                      <Text style={styles.creatorNameText}>Creator: {creatorName} ↗</Text>
+                    </TouchableOpacity>
                     <Text style={styles.dateText}>
                       Applied on: {new Date(app.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     </Text>
@@ -537,5 +544,10 @@ const styles = StyleSheet.create({
     color: '#FCA5A5',
     fontSize: 12,
     fontWeight: '600',
+  },
+  userInfoClickable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
 });
