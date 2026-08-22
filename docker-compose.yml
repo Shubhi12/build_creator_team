@@ -34,6 +34,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./server:/app
 
   client:
     build:
@@ -48,6 +50,9 @@ services:
       - REACT_NATIVE_PACKAGER_HOSTNAME=localhost
     depends_on:
       - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:

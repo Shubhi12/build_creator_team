@@ -11,6 +11,7 @@ class User(Base):
     full_name = Column(String, nullable=False)
     user_type = Column(String, nullable=False) # 'creator' or 'professional'
     avatar_url = Column(String, nullable=True)
+    hashed_password = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")

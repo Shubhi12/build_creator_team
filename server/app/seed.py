@@ -4,6 +4,7 @@ from app.models.user import User
 from app.models.profile import Profile
 from app.models.job import Job
 from app.models.application import Application
+from app.core.security import get_password_hash
 
 def seed_db():
     Base.metadata.create_all(bind=engine)
@@ -17,23 +18,27 @@ def seed_db():
         print("Seeding database with Creator Economy wedge data...")
 
         # 1. Creators
+        hashed_pw = get_password_hash("password123")
         c1 = User(
             email="creator.tech@creatoros.in",
             full_name="Tech Talkies India",
             user_type="creator",
-            avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
         c2 = User(
             email="creator.fitness@creatoros.in",
             full_name="FitLife with Kabir",
             user_type="creator",
-            avatar_url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
         c3 = User(
             email="creator.finance@creatoros.in",
             full_name="FinBytes India",
             user_type="creator",
-            avatar_url="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
 
         db.add_all([c1, c2, c3])
@@ -70,25 +75,29 @@ def seed_db():
             email="aarav.editor@creatoros.in",
             full_name="Aarav Sharma",
             user_type="professional",
-            avatar_url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
         p2 = User(
             email="dev.motion@creatoros.in",
             full_name="Dev Patel",
             user_type="professional",
-            avatar_url="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
         p3 = User(
             email="ananya.smm@creatoros.in",
             full_name="Ananya Verma",
             user_type="professional",
-            avatar_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
         p4 = User(
             email="rohan.manager@creatoros.in",
             full_name="Rohan Gupta",
             user_type="professional",
-            avatar_url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80"
+            avatar_url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80",
+            hashed_password=hashed_pw
         )
 
         db.add_all([p1, p2, p3, p4])

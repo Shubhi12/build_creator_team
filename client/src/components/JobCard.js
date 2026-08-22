@@ -3,13 +3,26 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TextInput } fro
 import { colors } from '../theme/colors';
 import { submitApplication } from '../services/api';
 
-export default function JobCard({ job, onApplied }) {
+export default function JobCard({ job, onApplied, currentUser, setActiveTab }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [coverNote, setCoverNote] = useState('');
   const [portfolio, setPortfolio] = useState('');
   const [proposedRate, setProposedRate] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [applied, setApplied] = useState(false);
+
+  const handleApplyClick = () => {
+    if (!currentUser) {
+      alert('Please sign in to apply for this job.');
+      setActiveTab('auth');
+      return;
+    }
+    if (currentUser.user_type !== 'professional') {
+      alert('Only professionals/talent can apply to jobs.');
+      return;
+    }
+    setModalVisible(true);
+  };
 
   const handleApplySubmit = async () => {
     if (!coverNote) {
@@ -86,7 +99,7 @@ export default function JobCard({ job, onApplied }) {
         <TouchableOpacity
           style={[styles.applyButton, applied && styles.appliedButton]}
           disabled={applied}
-          onPress={() => setModalVisible(true)}
+          onPress={handleApplyClick}
         >
           <Text style={styles.applyButtonText}>
             {applied ? '✓ Application Submitted' : 'Apply Now'}

@@ -5,7 +5,7 @@ import RoleFilter from '../components/RoleFilter';
 import JobCard from '../components/JobCard';
 import { fetchJobs } from '../services/api';
 
-export default function JobsScreen() {
+export default function JobsScreen({ currentUser, setActiveTab }) {
   const [selectedRole, setSelectedRole] = useState('All Roles');
   const [search, setSearch] = useState('');
   const [jobs, setJobs] = useState([]);
@@ -70,7 +70,13 @@ export default function JobsScreen() {
         <View>
           <Text style={styles.resultsCount}>Showing {jobs.length} open creator opportunities</Text>
           {jobs.map((job) => (
-            <JobCard key={job.id} job={job} onApplied={loadJobs} />
+            <JobCard
+              key={job.id}
+              job={job}
+              onApplied={loadJobs}
+              currentUser={currentUser}
+              setActiveTab={setActiveTab}
+            />
           ))}
         </View>
       )}

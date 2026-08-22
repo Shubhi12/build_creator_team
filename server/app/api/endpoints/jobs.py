@@ -4,7 +4,9 @@ from typing import List, Optional
 from app.core.database import get_db
 from app.models.job import Job
 from app.models.application import Application
+from app.models.user import User
 from app.schemas.job import JobCreate, JobResponse
+from app.core.security import get_current_user
 
 router = APIRouter()
 
@@ -49,8 +51,21 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     return job_resp
 
 @router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
-def create_job(job_in: JobCreate, db: Session = Depends(get_db)):
-    job = Job(**job_in.dict())
+def create_job(
+    job_in: JobCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.user_type != "creator":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only creators/hirers can post a job"
+        )
+        
+    job_data = job_in.dict()
+    job_data["creator_id"] = current_user.id
+    
+    job = Job(**job_data)
     db.add(job)
     db.commit()
     db.refresh(job)

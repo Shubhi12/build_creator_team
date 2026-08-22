@@ -11,7 +11,7 @@ class ApplicationBase(BaseModel):
 
 class ApplicationCreate(ApplicationBase):
     job_id: int
-    applicant_id: int
+    applicant_id: Optional[int] = None
 
 class ApplicationResponse(ApplicationBase):
     id: int

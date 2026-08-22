@@ -13,7 +13,7 @@ class JobBase(BaseModel):
     platforms: List[str] = []
 
 class JobCreate(JobBase):
-    creator_id: int
+    creator_id: Optional[int] = None
 
 class JobResponse(JobBase):
     id: int

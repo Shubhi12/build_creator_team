@@ -3,6 +3,77 @@ const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname !
   ? `http://${window.location.hostname}:8001/api/v1`
   : 'http://localhost:8001/api/v1';
 
+let authToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+export function setToken(token) {
+  authToken = token;
+  if (typeof window !== 'undefined') {
+    if (token) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
+    }
+  }
+}
+
+export function getToken() {
+  return authToken;
+}
+
+function getHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  return headers;
+}
+
+export async function login(email, password) {
+  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Login failed');
+  }
+  const data = await res.json();
+  setToken(data.access_token);
+  return data;
+}
+
+export async function signup(signupData) {
+  const res = await fetch(`${API_BASE_URL}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(signupData)
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Signup failed');
+  }
+  const data = await res.json();
+  setToken(data.access_token);
+  return data;
+}
+
+export async function getMe() {
+  if (!authToken) return null;
+  const res = await fetch(`${API_BASE_URL}/auth/me`, {
+    headers: getHeaders()
+  });
+  if (!res.ok) {
+    setToken(null);
+    return null;
+  }
+  return await res.json();
+}
+
+export function logout() {
+  setToken(null);
+}
+
 export async function fetchJobs(category = null, workType = null, search = '') {
   try {
     let url = `${API_BASE_URL}/jobs/`;
@@ -43,14 +114,16 @@ export async function createJob(jobData) {
   try {
     const res = await fetch(`${API_BASE_URL}/jobs/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(),
       body: JSON.stringify({
-        creator_id: 1, // Default seed creator
         ...jobData,
         platforms: Array.isArray(jobData.platforms) ? jobData.platforms : [jobData.platforms]
       })
     });
-    if (!res.ok) throw new Error('Failed to create job');
+    if (!res.ok) {
+      const errorDetail = await res.json();
+      throw new Error(errorDetail.detail || 'Failed to create job');
+    }
     return await res.json();
   } catch (err) {
     console.error('Error creating job:', err);
@@ -62,11 +135,8 @@ export async function submitApplication(appData) {
   try {
     const res = await fetch(`${API_BASE_URL}/applications/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        applicant_id: 1, // Default applicant
-        ...appData
-      })
+      headers: getHeaders(),
+      body: JSON.stringify(appData)
     });
     if (!res.ok) {
       const errorDetail = await res.json();
@@ -202,4 +272,40 @@ function getFallbackProfiles(role) {
     return profiles.filter(p => p.primary_role.toLowerCase().includes(role.toLowerCase()));
   }
   return profiles;
+}
+
+export async function fetchApplications(jobId = null, applicantId = null) {
+  try {
+    let url = `${API_BASE_URL}/applications/`;
+    const params = new URLSearchParams();
+    if (jobId) params.append('job_id', jobId);
+    if (applicantId) params.append('applicant_id', applicantId);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    const res = await fetch(url, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch applications');
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching applications:', err);
+    throw err;
+  }
+}
+
+export async function updateApplicationStatus(applicationId, status) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/applications/${applicationId}/status?status=${encodeURIComponent(status)}`, {
+      method: 'PATCH',
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to update application status');
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('Error updating application status:', err);
+    throw err;
+  }
 }

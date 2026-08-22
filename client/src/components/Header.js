@@ -1,15 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function Header({ activeTab, setActiveTab }) {
+export default function Header({ activeTab, setActiveTab, currentUser, onLogout }) {
   const tabs = [
     { key: 'home', label: 'Overview' },
-    { key: 'jobs', label: 'Explore Jobs' },
-    { key: 'talent', label: 'Find Talent' },
-    { key: 'post', label: 'Post a Role' },
-    { key: 'dashboard', label: 'Dashboard' }
   ];
+  
+  if (!currentUser || currentUser.user_type === 'creator') {
+    tabs.push({ key: 'talent', label: 'Find Talent' });
+    tabs.push({ key: 'post', label: 'Post a Role' });
+  }
+  
+  if (!currentUser || currentUser.user_type === 'professional') {
+    tabs.push({ key: 'jobs', label: 'Explore Jobs' });
+  }
+
+  tabs.push({ key: 'dashboard', label: 'Dashboard' });
 
   return (
     <View style={styles.headerContainer}>
@@ -24,8 +31,35 @@ export default function Header({ activeTab, setActiveTab }) {
           </View>
         </View>
         
-        <View style={styles.wedgeTag}>
-          <Text style={styles.wedgeTagText}>⚡ Initial Wedge: Editors • SMM • Managers</Text>
+        <View style={styles.rightSection}>
+          <View style={styles.wedgeTag}>
+            <Text style={styles.wedgeTagText}>⚡ Initial Wedge: Editors • SMM • Managers</Text>
+          </View>
+
+          {currentUser ? (
+            <View style={styles.profileContainer}>
+              <Image
+                source={{ uri: currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' }}
+                style={styles.avatar}
+              />
+              <View style={styles.profileTextContainer}>
+                <Text style={styles.profileName}>{currentUser.full_name}</Text>
+                <Text style={styles.profileRole}>
+                  {currentUser.user_type === 'creator' ? '👑 Creator' : '🎬 Talent'}
+                </Text>
+              </View>
+              <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
+                <Text style={styles.logoutBtnText}>Log Out</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[styles.loginBtn, activeTab === 'auth' && styles.loginBtnActive]}
+              onPress={() => setActiveTab('auth')}
+            >
+              <Text style={styles.loginBtnText}>Sign In 🚀</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -99,6 +133,11 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: 2,
   },
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
   wedgeTag: {
     backgroundColor: 'rgba(14, 165, 233, 0.12)',
     borderColor: colors.secondary,
@@ -111,6 +150,65 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     fontSize: 12,
     fontWeight: '600',
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceLight,
+    borderColor: colors.border,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    gap: 8,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.background,
+  },
+  profileTextContainer: {
+    justifyContent: 'center',
+  },
+  profileName: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  profileRole: {
+    color: colors.textMuted,
+    fontSize: 10,
+  },
+  logoutBtn: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginLeft: 4,
+  },
+  logoutBtnText: {
+    color: '#F87171',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  loginBtn: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  loginBtnActive: {
+    backgroundColor: colors.primaryHover,
+  },
+  loginBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   navRow: {
     flexDirection: 'row',
