@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI Backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--host",
+        "[IP_ADDRESS]", // check /etc/hosts file to check localhost is bind to which ip address or 127.0.0.1 to localhost
+        "--port",
+        "8001"
+      ],
+      "jinja": true,
+      "cwd": "${workspaceFolder}/server",
+      "envFile": "${workspaceFolder}/.env",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "console": "integratedTerminal"
+    }
+  ]
+}
