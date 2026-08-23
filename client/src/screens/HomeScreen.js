@@ -15,7 +15,7 @@ export default function HomeScreen({ setActiveTab }) {
         <Text style={styles.heroDescription}>
           The dedicated platform connecting content creators with vetted professionals who specialize in creator business operations—video editors, social media managers, and channel ops.
         </Text>
-        
+
         <View style={styles.heroActions}>
           <TouchableOpacity style={styles.primaryBtn} onPress={() => setActiveTab('jobs')}>
             <Text style={styles.primaryBtnText}>Discover Creator Jobs 🚀</Text>
@@ -70,7 +70,7 @@ export default function HomeScreen({ setActiveTab }) {
       {/* User Journey Section */}
       <View style={styles.journeyCard}>
         <Text style={styles.journeyTitle}>How It Works for Creator Businesses</Text>
-        
+
         <View style={styles.stepsRow}>
           <View style={styles.stepBox}>
             <Text style={styles.stepNum}>01</Text>
