@@ -2,14 +2,15 @@ from datetime import datetime, timedelta
 import hashlib
 import os
 from typing import Optional
+import uuid
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User
+from app.core.redis import get_redis
 
 security_scheme = HTTPBearer()
 
@@ -40,15 +41,22 @@ def get_password_hash(password: str) -> str:
     )
     return f"{salt.hex()}:{key.hex()}"
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
+def create_session(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    session_id = str(uuid.uuid4())
+    
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire_seconds = int(expires_delta.total_seconds())
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+        expire_seconds = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        
+    redis_client = get_redis()
+    # Assuming data contains "sub": user.email
+    email = data.get("sub")
+    
+    # Store session in Redis
+    redis_client.setex(f"session:{session_id}", expire_seconds, email)
+    
+    return session_id
 
 def get_current_user(
     db: Session = Depends(get_db),
@@ -59,19 +67,16 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    try:
-        payload = jwt.decode(
-            token.credentials,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
-        )
-        email: str = payload.get("sub")
-        if email is None:
-            raise credentials_exception
-    except jwt.PyJWTError:
+    
+    session_id = token.credentials
+    redis_client = get_redis()
+    
+    email = redis_client.get(f"session:{session_id}")
+    if email is None:
         raise credentials_exception
         
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
+        
     return user

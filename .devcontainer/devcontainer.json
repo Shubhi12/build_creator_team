@@ -6,7 +6,7 @@
     "docker-compose.yml"
   ],
   "service": "devcontainer",
-  "workspaceFolder": "/workspace/build_creator_team",
+  "workspaceFolder": "/workspace/build_creators_team",
   "customizations": {
     "vscode": {
       "settings": {

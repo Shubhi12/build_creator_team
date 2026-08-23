@@ -6,7 +6,7 @@ services:
       context: ./.devcontainer
       dockerfile: Dockerfile
     volumes:
-      - ..:/workspace/build_creator_team:cached
+      - .:/workspace/build_creators_team:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
     environment:
       - POSTGRES_SERVER=db

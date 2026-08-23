@@ -34,8 +34,8 @@ export default function App() {
     loadSession();
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setCurrentUser(null);
     setActiveTab('home');
   };

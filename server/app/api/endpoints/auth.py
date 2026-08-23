@@ -1,17 +1,19 @@
+from app.core.security import security_scheme
+from app.core.redis import get_redis
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User
 from app.models.profile import Profile
-from app.schemas.user import UserCreate, UserLogin, Token, UserResponse
-from app.core.security import get_password_hash, verify_password, create_access_token, get_current_user
+from app.schemas.user import UserCreate, UserLogin, SessionResponse, UserResponse
+from app.core.security import get_password_hash, verify_password, create_session, get_current_user
 
 router = APIRouter()
 
-@router.post("/signup", response_model=Token, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 def signup(user_in: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == user_in.email).first()
     if existing:
@@ -44,15 +46,15 @@ def signup(user_in: UserCreate, db: Session = Depends(get_db)):
     db.add(profile)
     db.commit()
 
-    # Generate token
-    access_token = create_access_token(data={"sub": db_user.email})
+    # Generate session
+    session_id = create_session(data={"sub": db_user.email})
     return {
-        "access_token": access_token,
+        "session_id": session_id,
         "token_type": "bearer",
         "user": db_user
     }
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=SessionResponse)
 def login(login_in: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == login_in.email).first()
     if not user or not user.hashed_password:
@@ -69,9 +71,9 @@ def login(login_in: UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
         
-    access_token = create_access_token(data={"sub": user.email})
+    session_id = create_session(data={"sub": user.email})
     return {
-        "access_token": access_token,
+        "session_id": session_id,
         "token_type": "bearer",
         "user": user
     }
@@ -79,6 +81,14 @@ def login(login_in: UserLogin, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(token: HTTPAuthorizationCredentials = Depends(security_scheme)):
+    session_id = token.credentials
+    redis_client = get_redis()
+    redis_client.delete(f"session:{session_id}")
+    return {"message": "Successfully logged out"}
 
 # Keep the old /users endpoints for backward compatibility if needed by the frontend/other files
 @router.post("/users", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

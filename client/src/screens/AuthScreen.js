@@ -23,7 +23,7 @@ export default function AuthScreen({ onAuthSuccess }) {
     try {
       if (isLogin) {
         const response = await login(email, password);
-        onAuthSuccess(response.user, response.access_token);
+        onAuthSuccess(response.user, response.session_id);
       } else {
         const response = await signup({
           email,
@@ -32,7 +32,7 @@ export default function AuthScreen({ onAuthSuccess }) {
           user_type: userType,
           avatar_url: `https://images.unsplash.com/photo-${userType === 'creator' ? '1534528741775-53994a69daeb' : '1500648767791-00dcc994a43e'}?auto=format&fit=crop&w=200&q=80`
         });
-        onAuthSuccess(response.user, response.access_token);
+        onAuthSuccess(response.user, response.session_id);
       }
     } catch (err) {
       setErrorMsg(err.message || 'Authentication failed. Please try again.');

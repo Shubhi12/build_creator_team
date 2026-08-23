@@ -39,7 +39,7 @@ export async function login(email, password) {
     throw new Error(err.detail || 'Login failed');
   }
   const data = await res.json();
-  setToken(data.access_token);
+  setToken(data.session_id);
   return data;
 }
 
@@ -54,7 +54,7 @@ export async function signup(signupData) {
     throw new Error(err.detail || 'Signup failed');
   }
   const data = await res.json();
-  setToken(data.access_token);
+  setToken(data.session_id);
   return data;
 }
 
@@ -70,7 +70,17 @@ export async function getMe() {
   return await res.json();
 }
 
-export function logout() {
+export async function logout() {
+  if (authToken) {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: getHeaders()
+      });
+    } catch (err) {
+      console.warn('Logout error:', err.message);
+    }
+  }
   setToken(null);
 }
 

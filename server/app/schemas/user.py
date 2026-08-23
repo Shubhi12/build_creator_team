@@ -22,7 +22,7 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
-class Token(BaseModel):
-    access_token: str
+class SessionResponse(BaseModel):
+    session_id: str
     token_type: str
     user: UserResponse
